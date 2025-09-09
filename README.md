@@ -1,189 +1,141 @@
-# FrontierMetrix Web App
+# FrontierMetrix
 
-A macro trading intelligence platform focused on frontier and emerging markets, providing real-time insights on currencies, commodities, bonds, and stablecoins.
+A 3D globe-based financial asset visualization iOS app built with SwiftUI and MapKit.
 
-## 🚀 Quick Start
+## Features
 
-### Prerequisites
+- **3D Globe Visualization**: Interactive 3D globe using MapKit with smooth camera controls (rotate/tilt/zoom)
+- **Asset Pins**: Interactive asset pins with pulsing risk badges and 44x44pt accessible targets
+- **Capital Flow Arcs**: Great-circle polylines with arch height and gradient width/opacity by magnitude
+- **Real-time Filtering**: Filter by asset class, region, risk level, and time window
+- **Timeline Controls**: Play/pause timeline with scrubbing and haptic feedback
+- **Performance Optimized**: Auto-switches between SwiftUI and MKMapView backends based on data load
+- **Accessibility**: Full VoiceOver support with proper labels and hints
 
-- Node.js 18+ 
-- pnpm 8+
-- Firebase project (optional, for full functionality)
+## Requirements
 
-### Installation
+- iOS 17.0+
+- Xcode 15.0+
+- Swift 5.9+
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd FrontierMetrixWeb
-   ```
+## Quick Start
 
-2. **Install dependencies**
-   ```bash
-   pnpm install
-   ```
+1. **Open the project** in Xcode 15+
+2. **Select your target device** (iPhone or iPad)
+3. **Build and run** (⌘+R)
 
-3. **Set up environment variables**
-   ```bash
-   cp apps/web/env.example apps/web/.env.local
-   ```
-   
-   Edit `.env.local` with your configuration:
-   - Firebase credentials (for data persistence)
-   - NextAuth configuration
-   - Google OAuth (optional)
+The app will launch with a 3D globe showing financial assets from around the world. Tap on any asset pin to view details, use the filter bar to customize the view, and control the timeline to see how data changes over time.
 
-4. **Start development server**
-   ```bash
-   pnpm dev
-   ```
-   
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## 🏗️ Project Structure
+## Project Structure
 
 ```
-FrontierMetrixWeb/
-├── apps/
-│   └── web/                    # Main Next.js application
-│       ├── src/
-│       │   ├── app/           # App Router pages
-│       │   ├── components/    # React components
-│       │   ├── hooks/         # Custom React hooks
-│       │   ├── lib/           # Utilities and configurations
-│       │   └── server/        # Server actions
-│       ├── scripts/           # Build and seed scripts
-│       └── tests/             # Test files
-├── packages/
-│   └── config/                # Shared configurations
-└── pnpm-workspace.yaml        # Monorepo configuration
+FrontierMetrix/
+├── App/
+│   ├── FrontierMetrixApp.swift      # Main app entry point
+│   ├── GlobeScreen.swift            # Main globe interface
+│   └── DebugOverlay.swift           # Debug information overlay
+├── Models/
+│   ├── AssetSignal.swift            # Financial asset data model
+│   ├── AssetFlow.swift              # Capital flow data model
+│   ├── Filters.swift                # Filtering and region presets
+│   ├── AssetClass.swift             # Asset type definitions
+│   └── RiskLevel.swift              # Risk level definitions
+├── Services/
+│   ├── SignalRepository.swift       # Data repository protocol
+│   ├── DataLoader.swift             # JSON data loading service
+│   ├── TimelineEngine.swift         # Timeline control and animation
+│   ├── FlowArcCalculator.swift      # Great-circle arc calculations
+│   └── RiskStyling.swift            # Risk-based visual styling
+├── Map/
+│   ├── FrontierMapView.swift        # High-level map switcher
+│   ├── SwiftUIMapBackend.swift      # SwiftUI Map implementation
+│   ├── MKMapBackend.swift           # MKMapView implementation
+│   ├── MapCameraController.swift    # Camera control logic
+│   ├── MapAnnotations.swift         # Asset pin views
+│   ├── MapOverlays.swift            # Flow arc overlays
+│   └── GlobeMKView.swift            # MKMapView wrapper
+├── UI/
+│   ├── FilterBar.swift              # Asset filtering interface
+│   ├── TimelineScrubber.swift       # Timeline controls
+│   └── AssetInfoSheet.swift         # Asset detail sheet
+├── Data/
+│   ├── seed_assets.json             # Sample asset data
+│   └── seed_flows.json              # Sample flow data
+└── Tests/
+    ├── FlowArcCalculatorTests.swift # Unit tests for arc calculations
+    ├── RiskStylingTests.swift       # Unit tests for styling
+    ├── DataLoaderTests.swift        # Unit tests for data loading
+    └── UITests_GlobeBasics.swift    # UI tests for basic functionality
 ```
 
-## 🛠️ Available Scripts
+## Key Components
 
-### Development
-- `pnpm dev` - Start development server
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
+### 3D Globe
+- Uses MapKit's 3D globe mode with realistic elevation
+- Smooth camera controls with rotation, tilt, and zoom
+- Automatic backend switching based on performance needs
 
-### Quality Assurance
-- `pnpm typecheck` - Run TypeScript type checking
-- `pnpm lint` - Run ESLint
-- `pnpm test` - Run tests
-- `pnpm test:coverage` - Run tests with coverage
+### Asset Visualization
+- **Pins**: Color-coded by risk level with pulsing animations
+- **Flows**: Great-circle arcs showing capital movement
+- **Clustering**: Automatic clustering for high-density areas
+- **Accessibility**: Full VoiceOver support
 
-### Data Management
-- `pnpm seed` - Seed Firestore with sample data (requires Firebase config)
+### Filtering System
+- **Asset Classes**: Currency, Crypto, Bond, Commodity, Stablecoin
+- **Regions**: Global, Africa, Latin America, Asia Pacific, EMEA, MENA, Europe, North America
+- **Risk Levels**: Low, Medium, High, Extreme
+- **Time Range**: Dynamic filtering based on timeline position
 
-## 🔧 Configuration
+### Timeline Engine
+- Play/pause controls with smooth animation
+- Haptic feedback on timeline ticks
+- Configurable playback speed
+- Date range scrubbing
 
-### Environment Variables
+## Performance
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `NEXTAUTH_URL` | NextAuth callback URL | Yes |
-| `NEXTAUTH_SECRET` | NextAuth secret key | Yes |
-| `NEXT_PUBLIC_FIREBASE_*` | Firebase configuration | No* |
-| `GOOGLE_CLIENT_ID` | Google OAuth client ID | No |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret | No |
+The app automatically switches between rendering backends based on data load:
+- **SwiftUI Map**: Used for ≤300 pins and ≤20 flows (previews, small datasets)
+- **MKMapView**: Used for larger datasets (default for production)
 
-*Required for data persistence and real-time features
+Performance targets:
+- ≥45 FPS on iPhone 14 Pro (Release build)
+- <120ms response time for pin taps
+- Graceful degradation for high data volumes
 
-### Feature Flags
+## Testing
 
-Control feature availability via `NEXT_PUBLIC_FM_FLAGS`:
+Run the test suite with ⌘+U in Xcode:
 
-```bash
-# Enable specific features
-NEXT_PUBLIC_FM_FLAGS=alerts,news,charts
+- **Unit Tests**: Core business logic and calculations
+- **UI Tests**: Basic user interactions and accessibility
+- **Performance Tests**: Load time and responsiveness
 
-# Available flags: alerts, news, charts
-```
+## Architecture
 
-## 🗄️ Firebase Setup
+The app follows a clean architecture pattern:
+- **Models**: Pure data structures with business logic
+- **Services**: Repository pattern with Combine publishers
+- **Map**: Pluggable rendering backends
+- **UI**: SwiftUI views with proper state management
 
-1. **Create a Firebase project** at [console.firebase.google.com](https://console.firebase.google.com)
+## Future Enhancements
 
-2. **Enable services:**
-   - Firestore Database
-   - Authentication (Google + Email)
-   - Storage (optional)
+- **Firestore Integration**: Real-time data updates
+- **Advanced Analytics**: Trend analysis and predictions
+- **Custom Themes**: User-customizable visual styles
+- **Export Features**: Data export and sharing
+- **Offline Support**: Cached data for offline viewing
 
-3. **Configure security rules:**
-   - Copy `firestore.rules` to your Firebase project
-   - Deploy rules via Firebase CLI
+## Contributing
 
-4. **Set environment variables:**
-   ```bash
-   NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-   # ... other Firebase config
-   ```
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
-5. **Seed data (optional):**
-   ```bash
-   pnpm seed
-   ```
+## License
 
-## 🧪 Testing
-
-The project uses Vitest and React Testing Library:
-
-```bash
-# Run all tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
-
-# Run tests with UI
-pnpm test:ui
-
-# Generate coverage report
-pnpm test:coverage
-```
-
-## 📦 Deployment
-
-### Vercel (Recommended)
-
-1. Connect your GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
-
-### Manual Deployment
-
-1. Build the application:
-   ```bash
-   pnpm build
-   ```
-
-2. Deploy the `apps/web/.next` folder to your hosting provider
-
-## 🚧 Development Status
-
-- ✅ **MVP Core**: Authentication, Dashboard, Assets, Countries
-- ✅ **Data Layer**: Firebase integration, Server Actions
-- ✅ **UI Components**: Responsive design, Dark mode
-- 🔄 **In Progress**: Advanced alerts, News ingestion
-- 📋 **Planned**: AI insights, Email notifications, Premium features
-
-## 🤝 Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
-
-## 📄 License
-
-This project is proprietary software. All rights reserved.
-
-## 🆘 Support
-
-For questions or issues:
-1. Check the [documentation](./docs/)
-2. Search existing [issues](../../issues)
-3. Create a new issue with detailed information
-
----
-
-**FrontierMetrix** - Intelligence layer for frontier markets
+This project is licensed under the MIT License - see the LICENSE file for details.
