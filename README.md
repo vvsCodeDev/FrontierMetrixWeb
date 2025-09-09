@@ -1,85 +1,80 @@
 # FrontierMetrix
 
-A 3D globe-based financial asset visualization iOS app built with SwiftUI and MapKit.
+A 3D globe-based financial asset visualization web application built with Next.js, React, and Three.js.
 
 ## Features
 
-- **3D Globe Visualization**: Interactive 3D globe using MapKit with smooth camera controls (rotate/tilt/zoom)
-- **Asset Pins**: Interactive asset pins with pulsing risk badges and 44x44pt accessible targets
-- **Capital Flow Arcs**: Great-circle polylines with arch height and gradient width/opacity by magnitude
+- **3D Globe Visualization**: Interactive 3D globe using Three.js with smooth camera controls (rotate/tilt/zoom)
+- **Asset Pins**: Interactive asset pins with pulsing risk badges and hover effects
+- **Capital Flow Arcs**: Great-circle polylines with arch height and gradient styling by magnitude
 - **Real-time Filtering**: Filter by asset class, region, risk level, and time window
-- **Timeline Controls**: Play/pause timeline with scrubbing and haptic feedback
-- **Performance Optimized**: Auto-switches between SwiftUI and MKMapView backends based on data load
-- **Accessibility**: Full VoiceOver support with proper labels and hints
+- **Timeline Controls**: Play/pause timeline with scrubbing and smooth animation
+- **Performance Optimized**: Efficient rendering with WebGL and Three.js
+- **Responsive Design**: Works on desktop and mobile devices
 
 ## Requirements
 
-- iOS 17.0+
-- Xcode 15.0+
-- Swift 5.9+
+- Node.js 18+
+- npm or pnpm
+- Modern web browser with WebGL support
 
 ## Quick Start
 
-1. **Open the project** in Xcode 15+
-2. **Select your target device** (iPhone or iPad)
-3. **Build and run** (⌘+R)
+1. **Install dependencies**:
+   ```bash
+   cd apps/web
+   npm install
+   ```
 
-The app will launch with a 3D globe showing financial assets from around the world. Tap on any asset pin to view details, use the filter bar to customize the view, and control the timeline to see how data changes over time.
+2. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
+
+3. **Open your browser** and navigate to `http://localhost:3000/globe`
+
+The app will load with a 3D globe showing financial assets from around the world. Click on any asset pin to view details, use the filter controls to customize the view, and control the timeline to see how data changes over time.
 
 ## Project Structure
 
 ```
-FrontierMetrix/
-├── App/
-│   ├── FrontierMetrixApp.swift      # Main app entry point
-│   ├── GlobeScreen.swift            # Main globe interface
-│   └── DebugOverlay.swift           # Debug information overlay
-├── Models/
-│   ├── AssetSignal.swift            # Financial asset data model
-│   ├── AssetFlow.swift              # Capital flow data model
-│   ├── Filters.swift                # Filtering and region presets
-│   ├── AssetClass.swift             # Asset type definitions
-│   └── RiskLevel.swift              # Risk level definitions
-├── Services/
-│   ├── SignalRepository.swift       # Data repository protocol
-│   ├── DataLoader.swift             # JSON data loading service
-│   ├── TimelineEngine.swift         # Timeline control and animation
-│   ├── FlowArcCalculator.swift      # Great-circle arc calculations
-│   └── RiskStyling.swift            # Risk-based visual styling
-├── Map/
-│   ├── FrontierMapView.swift        # High-level map switcher
-│   ├── SwiftUIMapBackend.swift      # SwiftUI Map implementation
-│   ├── MKMapBackend.swift           # MKMapView implementation
-│   ├── MapCameraController.swift    # Camera control logic
-│   ├── MapAnnotations.swift         # Asset pin views
-│   ├── MapOverlays.swift            # Flow arc overlays
-│   └── GlobeMKView.swift            # MKMapView wrapper
-├── UI/
-│   ├── FilterBar.swift              # Asset filtering interface
-│   ├── TimelineScrubber.swift       # Timeline controls
-│   └── AssetInfoSheet.swift         # Asset detail sheet
-├── Data/
-│   ├── seed_assets.json             # Sample asset data
-│   └── seed_flows.json              # Sample flow data
-└── Tests/
-    ├── FlowArcCalculatorTests.swift # Unit tests for arc calculations
-    ├── RiskStylingTests.swift       # Unit tests for styling
-    ├── DataLoaderTests.swift        # Unit tests for data loading
-    └── UITests_GlobeBasics.swift    # UI tests for basic functionality
+apps/web/
+├── src/
+│   ├── app/
+│   │   ├── api/globe/
+│   │   │   ├── assets/route.ts      # API endpoint for asset data
+│   │   │   └── flows/route.ts       # API endpoint for flow data
+│   │   └── globe/
+│   │       └── page.tsx             # Main globe page
+│   ├── components/
+│   │   └── globe/
+│   │       ├── GlobeView.tsx        # 3D globe component
+│   │       ├── GlobeFilters.tsx     # Filter controls
+│   │       ├── GlobeTimeline.tsx    # Timeline controls
+│   │       └── AssetInfoPanel.tsx   # Asset detail panel
+│   ├── lib/
+│   │   ├── types/
+│   │   │   └── globe.ts             # TypeScript types
+│   │   └── services/
+│   │       └── globeData.ts         # Data service
+│   └── components/layout/
+│       └── SideNav.tsx              # Navigation (updated)
+└── package.json
 ```
 
 ## Key Components
 
 ### 3D Globe
-- Uses MapKit's 3D globe mode with realistic elevation
-- Smooth camera controls with rotation, tilt, and zoom
-- Automatic backend switching based on performance needs
+- Uses Three.js for WebGL-based 3D rendering
+- Smooth camera controls with OrbitControls
+- Real-time asset and flow visualization
+- Responsive design for different screen sizes
 
 ### Asset Visualization
 - **Pins**: Color-coded by risk level with pulsing animations
 - **Flows**: Great-circle arcs showing capital movement
-- **Clustering**: Automatic clustering for high-density areas
-- **Accessibility**: Full VoiceOver support
+- **Hover Effects**: Interactive labels and tooltips
+- **Click Handlers**: Asset selection and detail viewing
 
 ### Filtering System
 - **Asset Classes**: Currency, Crypto, Bond, Commodity, Stablecoin
@@ -89,44 +84,60 @@ FrontierMetrix/
 
 ### Timeline Engine
 - Play/pause controls with smooth animation
-- Haptic feedback on timeline ticks
+- Date range scrubbing with visual feedback
+- Real-time data filtering based on selected date
 - Configurable playback speed
-- Date range scrubbing
+
+## Technology Stack
+
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **3D Graphics**: Three.js, @react-three/fiber, @react-three/drei
+- **Styling**: Tailwind CSS
+- **State Management**: React hooks and context
+- **API**: Next.js API routes
 
 ## Performance
 
-The app automatically switches between rendering backends based on data load:
-- **SwiftUI Map**: Used for ≤300 pins and ≤20 flows (previews, small datasets)
-- **MKMapView**: Used for larger datasets (default for production)
+- **WebGL Rendering**: Hardware-accelerated 3D graphics
+- **Efficient Updates**: Only re-render when data changes
+- **Memory Management**: Proper cleanup of Three.js objects
+- **Responsive Design**: Optimized for different screen sizes
 
-Performance targets:
-- ≥45 FPS on iPhone 14 Pro (Release build)
-- <120ms response time for pin taps
-- Graceful degradation for high data volumes
+## Development
 
-## Testing
+### Running the Development Server
 
-Run the test suite with ⌘+U in Xcode:
+```bash
+cd apps/web
+npm run dev
+```
 
-- **Unit Tests**: Core business logic and calculations
-- **UI Tests**: Basic user interactions and accessibility
-- **Performance Tests**: Load time and responsiveness
+### Building for Production
 
-## Architecture
+```bash
+npm run build
+npm start
+```
 
-The app follows a clean architecture pattern:
-- **Models**: Pure data structures with business logic
-- **Services**: Repository pattern with Combine publishers
-- **Map**: Pluggable rendering backends
-- **UI**: SwiftUI views with proper state management
+### Testing
+
+```bash
+npm run test
+```
+
+## API Endpoints
+
+- `GET /api/globe/assets` - Returns sample asset data
+- `GET /api/globe/flows` - Returns sample flow data
 
 ## Future Enhancements
 
-- **Firestore Integration**: Real-time data updates
+- **Real-time Data**: Integration with live financial data APIs
 - **Advanced Analytics**: Trend analysis and predictions
 - **Custom Themes**: User-customizable visual styles
 - **Export Features**: Data export and sharing
-- **Offline Support**: Cached data for offline viewing
+- **Mobile Optimization**: Enhanced mobile experience
+- **WebGL Optimizations**: Further performance improvements
 
 ## Contributing
 
